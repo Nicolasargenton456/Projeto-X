@@ -10,9 +10,31 @@ import {
 import { Feather } from "@expo/vector-icons";
 import MyButton from "../components/MyButton";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../context/useAuth";
 
 export default function SignIn() {
   const navigation = useNavigation()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { signIn } = useAuth();
+
+  async function handleSubmit() {
+    try {
+      setError("")
+      await signIn({ email, password })
+
+    }
+    catch (error) {
+      if (error.response && error.response.data && error.response.data.mensagem) {
+        setError(error.response.data.mensagem)
+      }
+      else {
+        setError("Falha no login. Verifique suas credenciais .")
+      }
+    }
+  }
+
   return (
 
     <View style={style.container}>
@@ -26,13 +48,23 @@ export default function SignIn() {
       <View style={{ gap: 16 }}>
         <View style={style.inputBox}>
           <Feather name="mail" size={32} color="#8a8787" />
-          <TextInput style={style.input} placeholder="Digite seu email" placeholderTextColor="#8a8787" keyboardType="email-address" />
+          <TextInput style={style.input}
+            placeholder="Digite seu email"
+            placeholderTextColor="#8a8787"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={(text) => setEmail(text)} />
         </View>
         <View style={style.inputBox}>
           <Feather name="lock" size={32} color="#8a8787" />
-          <TextInput placeholder="Digite sua senha" placeholderTextColor="#8a8787" secureTextEntry />
+          <TextInput placeholder="Digite sua senha"
+            placeholderTextColor="#8a8787"
+            secureTextEntry
+            value={password}
+            onChangeText={(text) => setPassword(text)} />
         </View>
-        <MyButton text="Login" style={{width:"100%"}}/>
+        {error && <Text>{error}</Text>}
+        <MyButton onPress={handleSubmit} text="Login" style={{ width: "100%" }} />
       </View>
     </View>
   );

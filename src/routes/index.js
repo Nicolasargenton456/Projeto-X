@@ -1,5 +1,7 @@
 import AppRoutes from "./app.routes";
 import AuthRoutes from "./auth.routes";
+import { useAuth } from "../context/useAuth";
+import React from "react";
 
 const Routes = () =>{
     const {user} = useAuth();
